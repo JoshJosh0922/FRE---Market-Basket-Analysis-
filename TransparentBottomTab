@@ -1,0 +1,154 @@
+import React from "react";
+import {
+  View,
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useVisibleTab } from "../../Context/VisibleTabProvider";
+
+export default function CustomTab({ state, descriptors, navigation }) {
+  const { VisibleTab } = useVisibleTab();
+  return (
+    <SafeAreaView
+      style={{
+        backgroundColor: "transparent",
+        position: "absolute",
+        alignSelf: "center",
+        bottom: 0,
+      }}
+    >
+      {VisibleTab && (
+        <View style={styles.tabBarContainer}>
+          {state.routes.map((route, index) => {
+            let label;
+            let IconName;
+            let OtherIcon = "";
+            let Screen = "";
+
+            const isFocused = state.index === index;
+
+            if (route.name === "HomeStack") {
+              IconName = isFocused ? "home" : "home-outline";
+              label = "Home";
+            } else if (route.name === "ProfileStack") {
+              IconName = isFocused ? "person" : "person-outline";
+              label = "Profile";
+            } else if (route.name === "ModuleStack") {
+              label = "Module";
+              IconName = isFocused ? "book" : "book-outline";
+            } else if (route.name === "EventStock") {
+              label = "Events";
+              IconName = isFocused ? "calendar" : "calendar-outline";
+            } else if (route.name === "AnnStack") {
+              label = "Announcement";
+              IconName = isFocused ? "newspaper" : "newspaper-outline";
+            }
+
+            const onPress = () => {
+              const event = navigation.emit({
+                type: "tabPress",
+                target: route.key,
+              });
+
+              if (!isFocused && !event.defaultPrevented) {
+                navigation.navigate(route.name);
+              }
+            };
+
+            const miniqrcode = {
+              ...styles.miniQR,
+              paddingLeft: isFocused ? 11 : 5,
+            };
+            return (
+              <TouchableOpacity
+                key={index}
+                onPress={onPress}
+                style={styles.tabBarButton}
+              >
+                <View style={styles.tabBarIconContainer}>
+                  <Ionicons
+                    name={IconName}
+                    size={isFocused ? 25 : 23}
+                    color={isFocused ? "#1182ff" : "#c1c1c1"}
+                  />
+                  {/* {isFocused && ( */}
+                  <View style={styles.tabBarTitleBack}>
+                    <Text
+                      style={[
+                        styles.tabBarTitle,
+                        {
+                          color: isFocused ? "#1182ff" : "#c1c1c1",
+                        },
+                      ]}
+                    >
+                      {label}
+                    </Text>
+                  </View>
+                  {/* )} */}
+                </View>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      )}
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  tabBarContainer: {
+    width: "95%",
+    marginBottom: 10,
+    paddingHorizontal:10,
+    display: "flex",
+    alignSelf: "center",
+    flexDirection: "row",
+    // borderTopRightRadius: 20,
+    // borderTopLeftRadius: 20,
+    borderRadius: 20,
+    backgroundColor: "white",
+    alignItems: "center",
+    justifyContent: "space-evenly",
+    height: 70,
+    elevation: 20,
+    // borderWidth: 1,
+    // elevation: 10,
+  },
+  tabBarButton: {
+    backgroundColor: "transparent",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 5,
+  },
+  tabBarIconContainer: {
+    backgroundColor: "transparent",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  tabBarTitleBack: {
+    marginHorizontal: 5,
+    backgroundColor: "transparent",
+    // backgroundColor: "rgba(2, 130, 255, 0.2)",
+    height: 22,
+    borderRadius: 100,
+    // paddingHorizontal: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  tabBarTitle: {
+    textAlign: "center",
+    fontSize: 11,
+    fontWeight: "500",
+  },
+  miniQR: {
+    position: "absolute",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingLeft: 5,
+  },
+});
